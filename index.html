@@ -13,6 +13,7 @@
   --green: #00ff00;
   --blue: #58a6ff;
   --gold: #ffd700;
+  --sidebar-w: 260px;
 }
 * { box-sizing: border-box; }
 body {
@@ -28,9 +29,66 @@ header {
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
   background: #010409;
+  z-index: 10;
 }
 h1 { margin: 0; color: var(--green); font-family: 'Courier New', monospace; font-size: 1.4rem; }
 .subtitle { font-size: 0.85rem; opacity: 0.7; margin-top: 4px; }
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+#sidebar {
+  width: var(--sidebar-w);
+  background: #010409;
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+#sidebar h3 {
+  color: var(--green);
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  margin: 0 0 12px 0;
+}
+#sidebar label {
+  display: block;
+  font-size: 0.8rem;
+  margin: 12px 0 4px;
+  opacity: 0.8;
+}
+#sidebar input, #sidebar select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+#sidebar .quick-owners {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+#sidebar .quick-owners button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--blue);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+#sidebar .quick-owners button:hover { border-color: var(--green); }
+#chat-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 #chat {
   flex: 1;
   overflow-y: auto;
@@ -64,7 +122,7 @@ h1 { margin: 0; color: var(--green); font-family: 'Courier New', monospace; font
   display: flex;
   gap: 8px;
 }
-input {
+#input-area input {
   flex: 1;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -73,7 +131,7 @@ input {
   border-radius: 8px;
   font-size: 1rem;
 }
-button {
+#input-area button {
   background: var(--green);
   color: #000;
   border: none;
@@ -82,21 +140,65 @@ button {
   font-weight: 600;
   cursor: pointer;
 }
-button:disabled { opacity: 0.5; }
+#input-area button:disabled { opacity: 0.5; }
 .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #000; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-footer { text-align: center; padding: 8px; font-size: 0.75rem; opacity: 0.5; }
+footer { text-align: center; padding: 8px; font-size: 0.75rem; opacity: 0.5; border-top: 1px solid var(--border); }
+@media (max-width: 700px) {
+  #sidebar { display: none; }
+  .main { flex-direction: column; }
+}
 </style>
 </head>
 <body>
 <header>
   <h1>🔍 Git Search Command Center</h1>
-  <div class="subtitle">Phase 1–3 • Language-aware rewrite • Multi-model cascade • Caching • Hybrid index path • Clone-and-Analyze ready</div>
+  <div class="subtitle">Phase 1–3 • Filters • Language detection • Public GitHub Search</div>
 </header>
-<div id="chat"></div>
-<div id="input-area">
-  <input id="query" placeholder="What are you looking for? (e.g. kotlin android full stack)" autofocus>
-  <button id="send">Search</button>
+<div class="main">
+  <aside id="sidebar">
+    <h3>⚙️ Filters</h3>
+    <label>Owner / User</label>
+    <input id="owner" placeholder="e.g. NeuroChainAi or CodesbyFebin" value="">
+    <div class="quick-owners">
+      <button type="button" data-owner="NeuroChainAi">NeuroChainAi</button>
+      <button type="button" data-owner="CodesbyFebin">CodesbyFebin</button>
+      <button type="button" data-owner="google">google</button>
+      <button type="button" data-owner="microsoft">microsoft</button>
+    </div>
+    <label>Language</label>
+    <select id="language">
+      <option value="">Any</option>
+      <option value="Kotlin">Kotlin</option>
+      <option value="Python">Python</option>
+      <option value="TypeScript">TypeScript</option>
+      <option value="JavaScript">JavaScript</option>
+      <option value="Rust">Rust</option>
+      <option value="Go">Go</option>
+      <option value="Java">Java</option>
+      <option value="Swift">Swift</option>
+      <option value="C++">C++</option>
+    </select>
+    <label>Min Stars</label>
+    <input id="minStars" type="number" placeholder="e.g. 100" min="0">
+    <label>Topic</label>
+    <input id="topic" placeholder="e.g. android, llm, scraper">
+    <label>Sort by</label>
+    <select id="sort">
+      <option value="stars">Stars</option>
+      <option value="updated">Updated</option>
+      <option value="forks">Forks</option>
+    </select>
+    <label>Max results</label>
+    <input id="maxResults" type="number" value="6" min="1" max="30">
+  </aside>
+  <div id="chat-wrap">
+    <div id="chat"></div>
+    <div id="input-area">
+      <input id="query" placeholder="What are you looking for? (e.g. kotlin android full stack)" autofocus>
+      <button id="send">Search</button>
+    </div>
+  </div>
 </div>
 <footer>Built by CodesbyFebin • systems that prove what happened • <a href="https://github.com/CodesbyFebin/git-scraper-engine" style="color:#58a6ff">GitHub</a></footer>
 
@@ -104,6 +206,12 @@ footer { text-align: center; padding: 8px; font-size: 0.75rem; opacity: 0.5; }
 const chat = document.getElementById('chat');
 const input = document.getElementById('query');
 const btn = document.getElementById('send');
+const ownerInput = document.getElementById('owner');
+
+// Quick owner buttons
+document.querySelectorAll('.quick-owners button').forEach(b => {
+  b.onclick = () => { ownerInput.value = b.dataset.owner; };
+});
 
 function addMessage(role, html) {
   const div = document.createElement('div');
@@ -113,26 +221,30 @@ function addMessage(role, html) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-function detectLanguage(q) {
-  const map = { kotlin: 'Kotlin', android: 'Kotlin', python: 'Python', rust: 'Rust', go: 'Go', java: 'Java', typescript: 'TypeScript', react: 'TypeScript', swift: 'Swift' };
-  const lower = q.toLowerCase();
-  for (const [k, v] of Object.entries(map)) if (lower.includes(k)) return v;
-  return null;
+function buildQuery(base) {
+  const parts = [base.trim()];
+  const owner = document.getElementById('owner').value.trim();
+  const lang = document.getElementById('language').value;
+  const minStars = document.getElementById('minStars').value;
+  const topic = document.getElementById('topic').value.trim();
+  if (owner) parts.push(`user:${owner}`);
+  if (lang) parts.push(`language:${lang}`);
+  if (minStars) parts.push(`stars:>=${minStars}`);
+  if (topic) parts.push(`topic:${topic}`);
+  return parts.filter(Boolean).join(' ');
 }
 
-async function searchGitHub(query) {
-  const lang = detectLanguage(query);
-  let q = encodeURIComponent(query);
-  if (lang) q += `+language:${lang}`;
-  const url = `https://api.github.com/search/repositories?q=${q}&sort=stars&order=desc&per_page=6`;
+async function searchGitHub(queryString, sort, perPage) {
+  const q = encodeURIComponent(queryString);
+  const url = `https://api.github.com/search/repositories?q=${q}&sort=${sort}&order=desc&per_page=${perPage}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`GitHub API ${res.status}`);
   return await res.json();
 }
 
-function renderRepos(data, originalQuery) {
-  if (!data.items || data.items.length === 0) return '<p>No repositories found.</p>';
-  let html = `<p><strong>Found ${data.items.length} repositories for:</strong> <code>${originalQuery}</code></p>`;
+function renderRepos(data, originalQuery, fullQuery) {
+  if (!data.items || data.items.length === 0) return `<p>No repositories found for: <code>${fullQuery}</code></p>`;
+  let html = `<p><strong>Found ${data.items.length} repositories</strong><br><small>Query: <code>${fullQuery}</code></small></p>`;
   data.items.forEach((repo, i) => {
     const stars = '⭐'.repeat(Math.min(5, Math.floor(repo.stargazers_count / 1000) + 1));
     html += `
@@ -142,22 +254,25 @@ function renderRepos(data, originalQuery) {
         <div>${repo.description || 'No description'}</div>
       </div>`;
   });
-  html += `<p style="opacity:0.6;font-size:0.85rem">Static demo uses public GitHub API. Full engine (query rewrite, multi-model cascade, caching, Phase 2/3) is in the Python package.</p>`;
+  html += `<p style="opacity:0.6;font-size:0.85rem">Static demo uses public GitHub Search API. Filters are applied as search qualifiers.</p>`;
   return html;
 }
 
 async function handleSearch() {
   const q = input.value.trim();
-  if (!q) return;
-  addMessage('user', q);
+  if (!q && !document.getElementById('owner').value.trim()) return;
+  const fullQuery = buildQuery(q || '*');
+  const sort = document.getElementById('sort').value;
+  const perPage = Math.min(30, Math.max(1, parseInt(document.getElementById('maxResults').value) || 6));
+  addMessage('user', q || `(owner: ${document.getElementById('owner').value})`);
   input.value = '';
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>Searching...';
   try {
-    const data = await searchGitHub(q);
-    addMessage('assistant', renderRepos(data, q));
+    const data = await searchGitHub(fullQuery, sort, perPage);
+    addMessage('assistant', renderRepos(data, q, fullQuery));
   } catch (e) {
-    addMessage('assistant', `<p>Error: ${e.message}. Rate limit or network issue. Try again later or use a token in the full engine.</p>`);
+    addMessage('assistant', `<p>Error: ${e.message}. Rate limit or network issue.</p>`);
   }
   btn.disabled = false;
   btn.textContent = 'Search';
@@ -167,7 +282,7 @@ async function handleSearch() {
 btn.onclick = handleSearch;
 input.onkeydown = e => { if (e.key === 'Enter') handleSearch(); };
 
-addMessage('assistant', 'Welcome to the Git Search Command Center.<br>Type a query like <code>kotlin android full stack</code> or <code>python scraper</code> to search public GitHub repositories.<br><br>This is the static GitHub Pages demo. The full Python engine with Phase 1–3 features lives in the repository.');
+addMessage('assistant', 'Welcome. Use the sidebar filters (Owner, Language, Min Stars, Topic) or just type a query.<br>Quick owners are available. This is the static GitHub Pages demo.');
 </script>
 </body>
 </html>
